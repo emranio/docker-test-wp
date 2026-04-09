@@ -10,7 +10,7 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db_data:/var/lib/mysql
 
   wordpress:
     depends_on:
@@ -27,7 +27,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       WORDPRESS_DB_NAME: ${DB_NAME}
     volumes:
-      - wordpress_data:/var/www/html
+      - ./wordpress_data:/var/www/html
 
   wp-cli:
     depends_on:
@@ -40,7 +40,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       WORDPRESS_DB_NAME: ${DB_NAME}
     volumes:
-      - wordpress_data:/var/www/html
+      - ./wordpress_data:/var/www/html
     # Keep the container running so we can exec into it
     command: tail -f /dev/null
 
@@ -57,7 +57,7 @@ services:
       # Mount the manager code
       - ./manager:/var/www/html
       # Mount the wordpress volume to manipulate files
-      - wordpress_data:/mnt/wordpress
+      - ./wordpress_data:/mnt/wordpress
       # Mount docker socket to restart containers
       - /var/run/docker.sock:/var/run/docker.sock
       # Mount the entire project so docker-compose can re-read .env
@@ -69,9 +69,6 @@ services:
       WORDPRESS_DB_NAME: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       WP_PORT: ${WP_PORT}
+      WORDPRESS_DEBUG: "true"
     depends_on:
       - db
-
-volumes:
-  db_data:
-  wordpress_data:
