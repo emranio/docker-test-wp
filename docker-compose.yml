@@ -1,5 +1,8 @@
+name: docker-wp
+
 services:
   db:
+    container_name: docker-wp-db
     build:
       context: ./db
       dockerfile: Dockerfile
@@ -13,6 +16,7 @@ services:
       - ./db_data:/var/lib/mysql
 
   wordpress:
+    container_name: docker-wp-wordpress
     depends_on:
       - db
     build:
@@ -31,6 +35,7 @@ services:
       - ./wordpress_data:/var/www/html
 
   wp-cli:
+    container_name: docker-wp-cli
     depends_on:
       - db
       - wordpress
@@ -47,8 +52,13 @@ services:
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
       WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
       WP_PLUGINS: ${WP_PLUGINS}
+      WP_INACTIVE_PLUGINS: ${WP_INACTIVE_PLUGINS}
+      WC_STORE_COUNTRY: ${WC_STORE_COUNTRY}
+      WC_STORE_CURRENCY: ${WC_STORE_CURRENCY}
+      WC_SKIP_ONBOARDING: ${WC_SKIP_ONBOARDING}
     volumes:
       - ./wordpress_data:/var/www/html
+      - ./scripts/wp-setup-common.sh:/usr/local/bin/wp-setup-common.sh:ro
       - ./wp-cli/bootstrap-wordpress.sh:/usr/local/bin/bootstrap-wordpress.sh:ro
     command: sh /usr/local/bin/bootstrap-wordpress.sh
 
@@ -56,7 +66,7 @@ services:
     build:
       context: ./manager
       dockerfile: Dockerfile
-    container_name: wp_manager
+    container_name: docker-wp-manager
     ports:
       - "8080:80"
     cap_add:
@@ -83,5 +93,10 @@ services:
       WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
       WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
       WP_PLUGINS: ${WP_PLUGINS}
+      WP_INACTIVE_PLUGINS: ${WP_INACTIVE_PLUGINS}
+      WC_STORE_COUNTRY: ${WC_STORE_COUNTRY}
+      WC_STORE_CURRENCY: ${WC_STORE_CURRENCY}
+      WC_SKIP_ONBOARDING: ${WC_SKIP_ONBOARDING}
+      WORDPRESS_CONTAINER_NAME: docker-wp-wordpress
     depends_on:
       - db

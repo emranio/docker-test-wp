@@ -83,8 +83,12 @@ ob_implicit_flush(true);
     <div class="container">
         <h1>WordPress Docker Manager</h1>
         <pre id="terminal">WP System Datetime# <?php
-                                                // Read time from WordPress container (which has libfaketime)
-                                                $wpTime = trim(shell_exec('sudo docker exec docker-test-wp-wordpress-1 date "+%d %b, %Y %I:%M:%S%p" 2>/dev/null'));
+                                                $wordpressContainerName = getenv('WORDPRESS_CONTAINER_NAME') ?: 'docker-wp-wordpress';
+                                                $timeCommand = sprintf(
+                                                    'sudo docker exec %s date "+%%d %%b, %%Y %%I:%%M:%%S%%p" 2>/dev/null',
+                                                    escapeshellarg($wordpressContainerName)
+                                                );
+                                                $wpTime = trim(shell_exec($timeCommand));
                                                 print($wpTime ?: date("d M, Y h:i:sA"));
                                                 ?>
         <?php
