@@ -19,12 +19,17 @@ fi
 
 # WP URL
 # If WP_PORT is set, construct URL.
-WP_URL="http://localhost:8000"
-if [ -n "$WP_PORT" ]; then
+WP_URL="${WP_SITE_URL:-http://localhost:8000}"
+if [ -n "$WP_PORT" ] && [ -z "${WP_SITE_URL:-}" ]; then
     WP_URL="http://localhost:$WP_PORT"
 fi
 
-SITE_TITLE="${1:-Test Site}"
+WP_ADMIN_USER="${WP_ADMIN_USER:-admin}"
+WP_ADMIN_PASSWORD="${WP_ADMIN_PASSWORD:-admin}"
+WP_ADMIN_EMAIL="${WP_ADMIN_EMAIL:-admin@wptest.local}"
+WP_PLUGINS="${WP_PLUGINS:-woocommerce}"
+
+SITE_TITLE="${1:-${WP_SITE_TITLE:-wp test}}"
 
 echo "<h3>Starting Clean Install...</h3>"
 echo "Site Title: $SITE_TITLE <br>"
@@ -60,10 +65,19 @@ sudo -u www-data wp core download
 
 echo "Creating wp-config.php... <br>"
 sudo -u www-data wp config create --dbname="${DB_NAME}" --dbuser="${DB_USER}" --dbpass="${DB_PASSWORD}" --dbhost="${DB_HOST}"
+sudo -u www-data wp config set WP_DEBUG true --raw
+sudo -u www-data wp config set WP_DEBUG_LOG true --raw
+sudo -u www-data wp config set WP_DEBUG_DISPLAY true --raw
 
 echo "Installing WordPress... <br>"
-sudo -u www-data wp core install --url="${WP_URL}" --title="${SITE_TITLE}" --admin_user=admin --admin_password=admin --admin_email=admin@test.local
+sudo -u www-data wp core install --url="${WP_URL}" --title="${SITE_TITLE}" --admin_user="${WP_ADMIN_USER}" --admin_password="${WP_ADMIN_PASSWORD}" --admin_email="${WP_ADMIN_EMAIL}"
+
+echo "Installing plugins... <br>"
+for plugin in $(echo "$WP_PLUGINS" | tr ',' ' '); do
+    [ -n "$plugin" ] || continue
+    sudo -u www-data wp plugin install "$plugin" --activate
+done
 
 echo "<h3>Installation Complete!</h3>"
 echo "You can access the site at: <a href='${WP_URL}' target='_blank'>${WP_URL}</a> <br>"
-echo "Admin Check: user: admin, pass: admin <br>"
+echo "Admin Check: user: ${WP_ADMIN_USER}, pass: ${WP_ADMIN_PASSWORD} <br>"

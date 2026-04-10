@@ -26,6 +26,7 @@ services:
       WORDPRESS_DB_USER: ${DB_USER}
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DEBUG: "true"
     volumes:
       - ./wordpress_data:/var/www/html
 
@@ -39,10 +40,17 @@ services:
       WORDPRESS_DB_USER: ${DB_USER}
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DEBUG: "true"
+      WP_SITE_URL: http://localhost:${WP_PORT}
+      WP_SITE_TITLE: ${WP_SITE_TITLE}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_PLUGINS: ${WP_PLUGINS}
     volumes:
       - ./wordpress_data:/var/www/html
-    # Keep the container running so we can exec into it
-    command: tail -f /dev/null
+      - ./wp-cli/bootstrap-wordpress.sh:/usr/local/bin/bootstrap-wordpress.sh:ro
+    command: sh /usr/local/bin/bootstrap-wordpress.sh
 
   manager:
     build:
@@ -69,6 +77,11 @@ services:
       WORDPRESS_DB_NAME: ${DB_NAME}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       WP_PORT: ${WP_PORT}
-      WORDPRESS_DEBUG: true
+      WORDPRESS_DEBUG: "true"
+      WP_SITE_TITLE: ${WP_SITE_TITLE}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_PLUGINS: ${WP_PLUGINS}
     depends_on:
       - db

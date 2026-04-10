@@ -84,7 +84,7 @@ ob_implicit_flush(true);
         <h1>WordPress Docker Manager</h1>
         <pre id="terminal">WP System Datetime# <?php
                                                 // Read time from WordPress container (which has libfaketime)
-                                                $wpTime = trim(shell_exec('sudo docker exec wp-test-docker-wordpress-1 date "+%d %b, %Y %I:%M:%S%p" 2>/dev/null'));
+                                                $wpTime = trim(shell_exec('sudo docker exec docker-test-wp-wordpress-1 date "+%d %b, %Y %I:%M:%S%p" 2>/dev/null'));
                                                 print($wpTime ?: date("d M, Y h:i:sA"));
                                                 ?>
         <?php
@@ -193,7 +193,7 @@ ob_implicit_flush(true);
                     <input type="hidden" name="action" value="install_wp">
                     <label>
                         Site Title:
-                        <input type="text" name="site_title" value="Test Site" required>
+                        <input type="text" name="site_title" value="wp test" required>
                     </label>
                     <br><br>
                     <button type="submit" onclick="return confirm('Are you sure? This will wipe everything.')">Install Fresh WP</button>

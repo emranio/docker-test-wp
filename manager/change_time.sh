@@ -10,7 +10,7 @@ echo ""
 
 # Write faketime directly into the running WordPress container's /etc/faketimerc
 # libfaketime reads this file automatically - no restart needed!
-CONTAINER="wp-test-docker-wordpress-1"
+CONTAINER="docker-test-wp-wordpress-1"
 
 if sudo docker ps --format "{{.Names}}" | grep -q "^${CONTAINER}$"; then
     echo "Writing @${NEW_TIME} to /etc/faketimerc in ${CONTAINER}..."
